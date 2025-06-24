@@ -1,0 +1,16 @@
+# Ignore Qt runtime binaries
+*.dll
+*.exe
+
+# Ignore generated translation files
+*.qm
+
+# Ignore SQLite databases
+*.db
+
+# Ignore Qt Creator user-specific files
+*.pro.user
+
+# Ignore Python caches
+__pycache__/
+*.pyc

@@ -26,4 +26,3 @@ Three virtual players (`XX34`, `XX45`, `Subs`) are inserted during initializatio
 ## Building
 
 The project contains a Qt Creator `.pro` file (`src/PootjeOver.pro`). Build the application with Qt 5 and a C++ compiler that supports the Qt Charts and Qt Sql modules. On Windows a pre-built executable (`PootjeOver.exe`) and Qt runtime libraries are included.
-
