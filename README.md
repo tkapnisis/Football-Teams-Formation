@@ -26,23 +26,3 @@ Three virtual players (`XX34`, `XX45`, `Subs`) are inserted during initializatio
 ## Building
 
 The project contains a Qt Creator `.pro` file (`src/PootjeOver.pro`). Build the application with Qt 5 and a C++ compiler that supports the Qt Charts and Qt Sql modules. On Windows a pre-built executable (`PootjeOver.exe`) and Qt runtime libraries are included.
-
-## Python command line version
-
-The folder `python_cli` contains a lightweight Python port that runs in the terminal and manipulates the same SQLite database.
-
-### Usage
-
-```bash
-python3 python_cli/main.py <command> [options]
-
-Commands:
-  init-db               ensure database schema and virtual players exist
-  add-player NAME RATING
-  record-game SCORE1 SCORE2 --team1 ID[,ID...] --team2 ID[,ID...]
-  show-ratings          recompute and display current ratings
-  suggest PLAYERS       suggest balanced teams for comma-separated player IDs
-```
-
-All commands accept `--db` to choose another database file.
-
