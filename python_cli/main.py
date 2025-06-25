@@ -128,6 +128,78 @@ def show_ratings(conn):
     for row in cur.fetchall():
         print(f"{row[0]:>2} {row[1]:<20} {row[2]}")
 
+def _compute_player_stats(conn):
+    """Return statistics dictionary for all players.
+
+    The returned mapping is keyed by player id and contains the following
+    fields: name, played, wins, draws, losses, goals_for, goals_against.
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT id, name FROM Players ORDER BY id")
+    stats = {
+        pid: {
+            "name": name,
+            "played": 0,
+            "wins": 0,
+            "draws": 0,
+            "losses": 0,
+            "goals_for": 0,
+            "goals_against": 0,
+        }
+        for pid, name in cur.fetchall()
+    }
+
+    cur.execute("SELECT id, team1, team2, score1, score2 FROM Games")
+    for game_id, team1, team2, score1, score2 in cur.fetchall():
+        team1_players = [r[0] for r in conn.execute(
+            "SELECT player FROM TeamPlayers WHERE team=?", (team1,)
+        )]
+        team2_players = [r[0] for r in conn.execute(
+            "SELECT player FROM TeamPlayers WHERE team=?", (team2,)
+        )]
+
+        if score1 > score2:
+            res1, res2 = "wins", "losses"
+        elif score1 < score2:
+            res1, res2 = "losses", "wins"
+        else:
+            res1 = res2 = "draws"
+
+        for p in team1_players:
+            st = stats.get(p)
+            if st is None:
+                continue
+            st["played"] += 1
+            st[res1] += 1
+            st["goals_for"] += score1
+            st["goals_against"] += score2
+        for p in team2_players:
+            st = stats.get(p)
+            if st is None:
+                continue
+            st["played"] += 1
+            st[res2] += 1
+            st["goals_for"] += score2
+            st["goals_against"] += score1
+
+    return stats
+
+def show_player_stats(conn):
+    """Print per-player game statistics."""
+    stats = _compute_player_stats(conn)
+    header = (
+        f"{'ID':>2} {'Name':<20} {'GP':>3} {'W':>3} {'D':>3} "
+        f"{'L':>3} {'GF':>4} {'GA':>4}"
+    )
+    print(header)
+    for pid in sorted(stats):
+        st = stats[pid]
+        print(
+            f"{pid:>2} {st['name']:<20} {st['played']:>3} "
+            f"{st['wins']:>3} {st['draws']:>3} {st['losses']:>3} "
+            f"{st['goals_for']:>4} {st['goals_against']:>4}"
+        )
+
 def suggest_teams(conn, players):
     if len(players) % 2:
         players.append(SUBS_ID)
@@ -168,6 +240,9 @@ def main():
     p = sub.add_parser("show-ratings")
     p.add_argument("--db", default=DB_PATH)
 
+    p = sub.add_parser("player-stats")
+    p.add_argument("--db", default=DB_PATH)
+
     p = sub.add_parser("suggest")
     p.add_argument("players")
     p.add_argument("--db", default=DB_PATH)
@@ -184,6 +259,8 @@ def main():
         record_game(conn, team1, team2, args.score1, args.score2)
     elif args.cmd == "show-ratings":
         show_ratings(conn)
+    elif args.cmd == "player-stats":
+        show_player_stats(conn)
     elif args.cmd == "suggest":
         players = [int(x) for x in args.players.split(',')]
         teams, diff = suggest_teams(conn, players)
