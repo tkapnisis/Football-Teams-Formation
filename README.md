@@ -11,6 +11,7 @@ This project is a C++/Qt5 application that helps build balanced football teams a
 - **Balanced team suggestion** – when starting a new game, the app suggests a split of available players into two sides with the smallest possible rating difference. Virtual players may be added if an odd number attend.
 - **Rating history graph** – visualize rating progression per player across all games.
 - **Persistent storage** – data is kept in `pootjeover.db` so ratings and results remain between sessions.
+- **CLI player statistics** – compute per-player game results and goals from the database.
 
 ## Database schema
 
