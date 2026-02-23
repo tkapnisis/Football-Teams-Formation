@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-DB_DEFAULT = "pootjeover_py.db"
+DB_DEFAULT = "data.db"
 VIRTUAL_PLAYERS = [
     (1, "XX34", 50, 50, 1),
     (2, "XX45", 50, 50, 1),
